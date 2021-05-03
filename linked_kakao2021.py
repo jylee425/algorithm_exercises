@@ -23,31 +23,40 @@ for m in ms:
   res = ""
 
   m_ = linked_list[refs[m]]
+  n_ = linked_list[m_.prev]
+  o_ = linked_list[m_.next]
   
-  h = linked_list[head.next]
-  head.next = m_.next
-  if h == m_:
-    tail.prev = id(m_.data)
+  # changing right and left with linked list
+  if n_ == head:
     m_.next = id(tail.data)
-    linked_list[head.next].prev = id(head.data)
+    tail.prev = id(m_.data)
   else:
-    h.prev = id(m_.data)
-    m_.next = id(h.data)
+    h_ = linked_list[n_.prev]
+    while(h_.prev != id(head.data)):
+      h_ = linked_list[h_.prev]
+    m_.next = id(h_.data)
+    h_.prev = id(m_.data)
 
-  t = linked_list[tail.prev]
-  tail.prev = m_.prev
-  if t == m_ :
-    head.next = id(m_.data)
+    tail.prev = id(n_.data)
+    n_.next = id(tail.data)
+
+  if o_ == tail :
     m_.prev = id(head.data)
-    linked_list[tail.prev].next = id(tail.data)
+    head.next = id(m_.data)
   else :
-    t.next = id(m_.data)
-    m_.prev = id(t.data)
-
+    t_ = linked_list[o_.next]
+    while(t_.next != id(tail.data)):
+      t_ = linked_list[t_.next]
+    m_.prev = id(t_.data)
+    t_.next = id(m_.data)
+    
+    head.next = id(o_.data)
+    o_.prev = id(head.data)
 
   k = linked_list[id(0)]
   for i in range(n):
     k = linked_list[k.next]
+    print(k.data)
     res += f"{k.data} "
   
   print(res)
