@@ -1,5 +1,17 @@
+from sys import stdin
+
+N = int(input())
+
+map = []
+for i in range(N):
+  tmp = []
+  line = stdin.readline().strip()
+  for j in line:
+    tmp.append(j)
+  map.append(tmp)
+
 def dfs(map, x, y):
-  if (x >= 0 and x < n) and (y >= 0 and y < n):
+  if (x >= 0 and x < N) and (y >= 0 and y < N):
     if map[x][y] == 1:
       dfs(x-1, y)
       dfs(x+1, y)
@@ -10,8 +22,18 @@ def dfs(map, x, y):
       return False
   return False
 
-n = int(input())
+result = 0
+answer = []
+count  = 0
+for i in range(N):
+  for j in range(N):
+    if dfs(map, i, j) == True:
+      result += 1
+      answer.append(count)
+      count = 0
+print(result)
+answer.sort()
+for i in answer:
+  print(i)
+      
 
-map = []
-for i in range(n):
-  map.append(list(map(int,input().strip())))
