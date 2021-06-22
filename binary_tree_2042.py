@@ -37,14 +37,15 @@ for _ in range(n) :
     arr.append(int(input()))
 
 tree = [0] * (1000000 * 3)
-start, end, node = 0, n-1, 1
-build_tree(tree, node, start, end, arr)
+build_tree(tree, 1, 0, n-1, arr)
 
 for _ in range(m+k) :
     a, b, c = map(int, input().split())
  
     if a == 1 :
-        update_tree(tree, node, start, end, b-1, c-arr[b-1])
+        diff = c - arr[b-1]
+        arr[b-1] += diff
+        update_tree(tree, 1, 0, n-1, b-1, diff)
 
     if a == 2 :                
-        print(sum_subtree(tree, node, start, end, b-1, c-1))
+        print(sum_subtree(tree, 1, 0, n-1, b-1, c-1))
