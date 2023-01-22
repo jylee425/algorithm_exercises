@@ -1,35 +1,36 @@
 
-T = -1
 ans = 1e10
 
-def check(selected, Sij):
-    global ans, T
+def check(N, visited, Sij):
+    global ans
 
-    res = 0
-    for i in selected:
-        for j in selected:
-            res += Sij[i][j]
+    start, link = 0, 0
+    for i in range(N-1):
+        for j in range(i+1, N):
+            if visited[i] and visited[j]:
+                start += Sij[i][j] + Sij[j][i]
+            elif not visited[i] and not visited[j]:
+                link += Sij[i][j] + Sij[j][i]
 
-    ans = min(abs(T - res - res), ans)
-    print('**', ans)
+    ans = min(ans, abs(start-link))
     return
 
-def dfs(N, Sij, selected):
-    print(selected)
-    check(selected, Sij)
+def dfs(N, Sij, visited, cnt):
+    if cnt == N:
+        check(N, visited, Sij)
+        return
     
-    for i in range(N):
-        if i in selected: continue
-
-        selected.append(i)
-        dfs(N, Sij, selected)
-        selected.pop()
+    visited[cnt] = True
+    dfs(N, Sij, visited, cnt+1)
+    visited[cnt] = False
+    dfs(N, Sij, visited, cnt+1)
 
     return
 
 def main(N, Sij):
-    selected = []
-    dfs(N, Sij, selected) 
+    cnt = 0
+    visited = [False] * N
+    dfs(N, Sij, visited, cnt) 
 
     print(ans)
     return
@@ -37,11 +38,6 @@ def main(N, Sij):
 
 if __name__ == '__main__':
     N = int(input())
-
-    Sij = []
-    for _ in range(N):
-        tmp = list(map(int, input().split()))
-        Sij.append(tmp)
-        T += sum(tmp)
+    Sij = [list(map(int, input().split())) for _ in range(N)]
 
     main(N, Sij)
