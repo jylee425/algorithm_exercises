@@ -3,46 +3,57 @@ from collections import deque
 input = sys.stdin.readline
 
 def bfs(V, E, W, now):
-    res = []
+    zeros, ones = [], []
     deq = deque()
     visited = [0] * V
 
-    deq.append(now)
+    deq.append((now, 0))
     visited[now] = 1
 
     while(True):
         if len(deq) <= 0: break
 
-        src = deq.popleft()
-        res.append(src)
-        
+        src, group = deq.popleft()
+        # print(src, group)
+        if group == 0: 
+            zeros.append(src)
+            other = 1
+        elif group == 1: 
+            ones.append(src)
+            other = 0
+
         for dst in W[src]:
             if visited[dst]: continue
 
             visited[dst] = 1
-            deq.append(dst)
+            deq.append((dst, other))
 
-    return res
+    return zeros, ones
 
 def main(V, E, W):
-    left = bfs(V, E, W, 0)
-    if sum(left) == V or sum(left) == 0:
-        print('NO')
-        return
+    zeros, ones = bfs(V, E, W, 0)
+    # print(zeros, ones)
 
-    right = []
-    for i in range(V):
-        if i in left: continue 
+    while(True):
+        if len(zeros) + len(ones) == V: break
 
-        right = bfs(V, E, W, i)
-        break
-    
-    # print(left, right)
-    for i in range(V):
-        if (i in left) or (i in right): continue
-        else: 
-            print('NO')
-            return
+        for i in range(V):
+            if (i in zeros) or (i in ones): continue
+
+            tmp_0, tmp_1 = bfs(V, E, W, i)
+            zeros = zeros + tmp_0
+            ones = ones + tmp_1
+
+    for src in zeros:
+        for dst in W[src]:
+            if dst in zeros:
+                print('NO')
+                return
+    for src in ones:
+        for dst in W[src]:
+            if dst in ones:
+                print('NO')
+                return
     print('YES')
     return
 
