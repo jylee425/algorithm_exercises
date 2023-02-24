@@ -1,48 +1,36 @@
+import sys
+input = sys.stdin.readline
+MOD = 1000000000
+ANSWER = (1 << 10) - 1
 
-def check(res):
+def dp(N):
+    '''
+    memo[i][bitmasking]
+        i stands for the last digit
+        bitmasking to check 0~9 has been used 
+    '''
+    memo = [[0] * (ANSWER + 1) for _ in range(10)]
+
+    for i in range(1, 10):
+        memo[i][1 << i] = 1
+
+    for _ in range(2, N+1):
+        tmp = [[0] * (ANSWER + 1) for _ in range(10)]
+
+        for i in range(10):
+            for j in range(ANSWER+1):
+                if i > 0:
+                    tmp[i][j | (1 << i)] = (tmp[i][j | (1 << i)] + memo[i-1][j]) % MOD
+                if i < 9:
+                    tmp[i][j | (1 << i)] = (tmp[i][j | (1 << i)] + memo[i+1][j]) % MOD
+        memo = tmp
+
+    res = 0
     for i in range(10):
-        if i not in res:
-            return 0
-    return 1
-
-def dfs(N, res, answer):
-    print(res)
-
-    if len(res) == N:
-        answer += check(res)
-
-    if len(res) == 0: 
-        for i in range(1, 10):
-            res.append(i)
-            dfs(N, res, answer)
-            res.pop()
-    else:
-        tmp = res[-1]
-        if 1 <= tmp <= 8:
-            res.append(tmp+1)
-            dfs(N, res, answer)
-            res.pop()
-
-            res.append(tmp-1)
-            dfs(N, res, answer)
-            res.pop()
-        elif tmp == 0:
-            res.append(tmp+1)
-            dfs(N, res, answer)
-            res.pop()
-        elif tmp == 9:
-            res.append(tmp-1)
-            dfs(N, res, answer)
-            res.pop()
+        res += memo[i][ANSWER]
+    print(res % MOD)
     return
-
-def main(N):
-    answer = 0
-    res = []
-
-    dfs(N, res, answer)
-    return 
 
 if __name__ == '__main__':
     N = int(input())
-    main(N)
+    dp(N)
