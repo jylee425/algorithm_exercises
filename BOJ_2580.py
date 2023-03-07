@@ -1,76 +1,48 @@
 import copy
 
-def build_left(board):
-    left = {} # row * 9 + col: possibles
-    board_row, board_col, board_box = {}, {}, {}
-    for i in range(9): board_row[i], board_col[i], board_box[i] = [], [], []
-
+def possible(board, x, y, n):
+    # row
     for i in range(9):
-        for j in range(9):
-            board_row[i].append(board[i][j])
-            board_col[i].append(board[j][i])
-            board_box[(i//3)*3+(j//3)].append(board[i][j])
+        if board[x][i] == n:
+            return False
 
+    # col
     for i in range(9):
-        for j in range(9):
-            idx = i * 9 + j
-            if board[i][j] == 0:
-                left[idx] = set([1,2,3,4,5,6,7,8,9])
-                left[idx] -= set(board_row[i])
-                left[idx] -= set(board_col[j])
-                left[idx] -= set(board_box[(i//3)*3+(j//3)])
-            else:
-                left[idx] = set()
+        if board[i][y] == n:
+            return False
 
-    return left
-
-def check(now):
-    for i in range(9):
-        for j in range(9):
-            if board[i][j] == 0:
+    # box
+    box_x, box_y = x // 3, y //3 
+    for i in range(3):
+        for j in range(3):
+            if board[box_x * 3 + i][box_y * 3 + j] == n:
                 return False
-    return True
 
-def bruteforce(board, left, now, visited):
-    sum_visited = sum([sum(visited[i]) for i in range(9)])
-    print('\n', now, sum_visited, left, '\n')
-    if sum_visited == 81:
-        for b in now:
+    return True 
+
+
+def bruteforce(board, empty, cnt):
+    if cnt == len(empty):
+        for b in board:
             print(' '.join(map(str, b)))
         exit(0)
-    
-    for i in range(9):
-        for j in range(9):
-            if visited[i][j]: continue
-             
-            candidate = list(left[i * 9 + j])
-            if len(candidate) == 0: return
 
-            number = candidate[0] # pick one
-
-            now[i][j] = number
-            new_left = build_left(now)
-            visited[i][j] = 1
-            ret = bruteforce(board, new_left, now, visited)
-            now[i][j] = 0
-            visited[i][j] = 0
-            left = build_left(now)
+    x, y = empty[cnt]
+    for n in range(1, 10):
+        if possible(board, x, y, n):
+            board[x][y] = n
+            bruteforce(board, empty, cnt+1)
+            board[x][y] = 0
     return
 
 
 def main(board):
-    left = build_left(board)
-    # print(left)
-
-    visited = [[0] * 9 for _ in range(9)]
+    empty = []
     for i in range(9):
         for j in range(9):
-            if board[i][j] != 0: visited[i][j] = 1
-    now = copy.deepcopy(board)
-    bruteforce(board, left, now, visited)
-
-    # for b in board:
-    #     print(' '.join(map(str, b)))
+            if board[i][j] == 0: empty.append((i,j))
+    bruteforce(board, empty, 0)
+    
     return
 
 if __name__ == '__main__':
